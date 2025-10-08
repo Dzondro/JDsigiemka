@@ -1,0 +1,13 @@
+{
+  "name": "server for true sigmas",
+  "version": "1.0.0",
+  "description": "Real sigmas only",
+  "main": "index.js",
+    "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Jakub Sigmerski",
+  "license": "ISC",
+  "type": "module"
+}
