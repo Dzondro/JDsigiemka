@@ -14,14 +14,14 @@ header {
 }
 
 nav a {
-  color: #00ffff;
+  color: #ff0000;
   margin: 0 10px;
   text-decoration: none;
   transition: color 0.3s;
 }
 
 nav a:hover {
-  color: #ff00ff;
+  color: #ff0000;
 }
 
 main {

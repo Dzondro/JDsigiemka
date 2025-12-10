@@ -1,16 +1,15 @@
 {
-  "name": "projekt_blog",
+  "name": "projekt03",
   "version": "1.0.0",
-  "description": "Prosty serwer Express z dynamicznymi widokami - autor: Jakub Jedrak",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
+    "body-parser": "^1.20.0",
     "ejs": "^3.1.9",
-    "body-parser": "^1.20.2"
-  },
-  "author": "Jakub Jedrak",
-  "license": "ISC"
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6"
+  }
 }

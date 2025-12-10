@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <% include partials/head %>
+</head>
+<body>
+  <% include partials/nav %>
+
+  <div class="container">
+    <h2>Edytuj wpis</h2>
+
+    <form action="/edit/<%= post.id %>" method="POST">
+      <input type="text" name="title" value="<%= post.title %>" required>
+      <textarea name="content" required><%= post.content %></textarea>
+      <button type="submit">Zapisz</button>
+    </form>
+  </div>
+</body>
+</html>
