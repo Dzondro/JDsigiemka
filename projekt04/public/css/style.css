@@ -70,7 +70,7 @@ button:hover {
 
 
 
-body[data-theme='light']{
+html[data-theme='light']{
     --background: white;
     --text-color-normal: black;
     --text-color-link: blue;

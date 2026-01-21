@@ -1,7 +1,5 @@
 "use strict";
 
-const ONE_DAY = 24 * 60 * 60 * 1000;
-const THEME_COOKIE = "fisz-theme";
 
 export function themeToggle(req, res) {
   var theme = req.cookies[THEME_COOKIE];
