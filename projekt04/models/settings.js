@@ -1,6 +1,8 @@
 "use strict";
 
 
+const THEME_COOKIE = "theme";
+
 export function themeToggle(req, res) {
   var theme = req.cookies[THEME_COOKIE];
   if (theme === "dark") {

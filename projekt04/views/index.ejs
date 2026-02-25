@@ -16,8 +16,57 @@
         Ciemny | <strong>Jasny</strong>
         <% } %>
         </a>
+        <button data-action="login">Logowanie</button>
+        <button data-action="register">Rejestracja</button>
       </nav>
     </header>
+
+    <div id="login-modal" class="modal" aria-hidden="true">
+      <div class="modal-content" role="dialog" aria-modal="true" aria-label="Formularz logowania">
+        <button class="modal-close" aria-label="Zamknij">×</button>
+        <h3>Logowanie</h3>
+        <form id="login-form">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="twoj@email.pl" required>
+
+          <label for="password">Hasło</label>
+          <input id="password" name="password" type="password" placeholder="Hasło" required>
+
+          <div class="modal-actions">
+            <button type="submit">Zaloguj</button>
+            <button type="button" class="modal-cancel">Anuluj</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="register-modal" class="modal" aria-hidden="true">
+      <div class="modal-content" role="dialog" aria-modal="true" aria-label="Formularz rejestracji">
+        <button class="modal-close" aria-label="Zamknij">×</button>
+        <h3>Rejestracja</h3>
+        <form id="register-form">
+          <label for="reg-first">Imię</label>
+          <input id="reg-first" name="firstName" type="text" placeholder="Imię" required>
+
+          <label for="reg-last">Nazwisko</label>
+          <input id="reg-last" name="lastName" type="text" placeholder="Nazwisko" required>
+
+          <label for="reg-age">Wiek</label>
+          <input id="reg-age" name="age" type="number" min="0" max="150" placeholder="Wiek" required>
+
+          <label for="reg-email">Email</label>
+          <input id="reg-email" name="email" type="email" placeholder="twoj@email.pl" required>
+
+          <label for="reg-password">Hasło</label>
+          <input id="reg-password" name="password" type="password" placeholder="Hasło" required>
+
+          <div class="modal-actions">
+            <button type="submit">Zarejestruj</button>
+            <button type="button" class="modal-cancel">Anuluj</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <main>
       <section class="form-section">
