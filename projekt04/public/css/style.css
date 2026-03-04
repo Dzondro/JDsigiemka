@@ -54,7 +54,7 @@ main {
 }
 
 form input, form textarea {
-  width: 100%;
+  width: 94%;
   margin-bottom: 1rem;
   padding: 0.7rem;
   background: var(--input-bg);
