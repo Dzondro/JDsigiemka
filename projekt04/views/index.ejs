@@ -16,16 +16,23 @@
         Ciemny | <strong>Jasny</strong>
         <% } %>
         </a>
-        <button data-action="login">Logowanie</button>
-        <button data-action="register">Rejestracja</button>
+        <% if (user) { %>
+          <span class="user-badge"><%= user.email %></span>
+          <button data-action="logout">Wyloguj</button>
+        <% } else { %>
+          <button data-action="login">Logowanie</button>
+          <button data-action="register">Rejestracja</button>
+        <% } %>
       </nav>
     </header>
 
+    <% if (!user) { %>
     <div id="login-modal" class="modal" aria-hidden="true">
       <div class="modal-content" role="dialog" aria-modal="true" aria-label="Formularz logowania">
         <button class="modal-close" aria-label="Zamknij">×</button>
         <h3>Logowanie</h3>
         <form id="login-form">
+          <p class="form-error" aria-live="polite"></p>
           <label for="email">Email</label>
           <input id="email" name="email" type="email" placeholder="twoj@email.pl" required>
 
@@ -45,6 +52,7 @@
         <button class="modal-close" aria-label="Zamknij">×</button>
         <h3>Rejestracja</h3>
         <form id="register-form">
+          <p class="form-error" aria-live="polite"></p>
           <label for="reg-first">Imię</label>
           <input id="reg-first" name="firstName" type="text" placeholder="Imię" required>
 
@@ -67,15 +75,23 @@
         </form>
       </div>
     </div>
+    <% } %>
 
     <main>
       <section class="form-section">
         <h2>Dodaj nowy post</h2>
+        <% if (error === "login_required") { %>
+          <p class="notice notice-warn">Musisz być zalogowany, żeby dodać post.</p>
+        <% } %>
+        <% if (user) { %>
         <form action="/add" method="POST">
           <input type="text" name="title" placeholder="Tytuł posta" required />
           <textarea name="content" placeholder="Treść posta" required></textarea>
           <button type="submit">Dodaj</button>
         </form>
+        <% } else { %>
+          <p class="notice">Zaloguj się, aby móc dodawać posty.</p>
+        <% } %>
       </section>
 
       <section class="posts">
@@ -87,7 +103,18 @@
             <article class="post">
               <h3><%= post.title %></h3>
               <p><%= post.content %></p>
-              <span class="date"><%= post.date %></span>
+              <div class="post-meta">
+                <span class="date"><%= post.date %> | <%= post.firstName %> <%= post.lastName %></span>
+                <% if (user && Number(user.id) === Number(post.authorId)) { %>
+                  <div class="post-actions">
+                    <a class="post-action post-edit" href="/posts/<%= post.id %>/edit">Edytuj</a>
+                    <form class="post-delete-form" action="/posts/<%= post.id %>/delete" method="POST">
+                      <button class="post-action post-delete" type="submit">Usuń</button>
+                      <p class="inline-error" aria-live="polite"></p>
+                    </form>
+                  </div>
+                <% } %>
+              </div>
             </article>
           <% }) %>
         <% } %>

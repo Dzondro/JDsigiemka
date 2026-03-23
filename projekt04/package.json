@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Prosty serwer Express z dynamicznymi widokami - autor: Jakub Jedrak",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
