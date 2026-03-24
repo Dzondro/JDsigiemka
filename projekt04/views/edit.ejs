@@ -16,8 +16,8 @@
       <section class="form-section">
         <h2>Zmień treść</h2>
         <form action="/posts/<%= post.id %>/edit" method="POST">
-          <input type="text" name="title" value="<%= post.title %>" required />
-          <textarea name="content" required><%= post.content %></textarea>
+          <input type="text" name="title" value="<%= post.title %>" maxlength="120" required />
+          <textarea name="content" maxlength="5000" required><%= post.content %></textarea>
           <div class="modal-actions">
             <button type="submit">Zapisz</button>
             <a class="btn-secondary" href="/">Anuluj</a>

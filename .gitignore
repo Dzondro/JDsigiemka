@@ -1,3 +1,7 @@
 # npm external dependencies
 node_modules/
 *.log
+
+# sqlite databases (project artifacts)
+projekt04/*.sqlite*
+projekt04/data/*.sqlite*

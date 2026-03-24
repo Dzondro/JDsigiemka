@@ -1,5 +1,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import fs from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -8,7 +9,9 @@ const __dirname = path.dirname(__filename);
 const dbPath =
   process.env.DB_PATH?.trim()
     ? path.resolve(process.env.DB_PATH.trim())
-    : path.join(__dirname, "..", "blog.sqlite");
+    : path.join(__dirname, "..", "data", "blog.sqlite");
+
+fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
 export const db = new DatabaseSync(dbPath);
 
@@ -26,9 +29,16 @@ export function initDb() {
       password_hash TEXT NOT NULL,
       password_salt TEXT NOT NULL,
       password_iterations INTEGER NOT NULL,
+      is_admin INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
+
+  const userColumns = db.prepare("PRAGMA table_info(users);").all();
+  const hasIsAdmin = userColumns.some((col) => col?.name === "is_admin");
+  if (!hasIsAdmin) {
+    db.exec("ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0;");
+  }
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS sessions (
@@ -59,4 +69,3 @@ export default {
   db,
   initDb,
 };
-

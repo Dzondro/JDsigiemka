@@ -12,11 +12,30 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = Number(process.env.PORT) || 8000;
+const MAX_POST_TITLE_LEN = 120;
+const MAX_POST_CONTENT_LEN = 5000;
+
+function validatePostInput(title, content) {
+  const safeTitle = String(title || "").trim();
+  const safeContent = String(content || "").trim();
+
+  if (!safeTitle || !safeContent) {
+    return { ok: false, error: "Tytuł i treść są wymagane." };
+  }
+  if (safeTitle.length > MAX_POST_TITLE_LEN) {
+    return { ok: false, error: `Tytuł może mieć maksymalnie ${MAX_POST_TITLE_LEN} znaków.` };
+  }
+  if (safeContent.length > MAX_POST_CONTENT_LEN) {
+    return { ok: false, error: `Treść może mieć maksymalnie ${MAX_POST_CONTENT_LEN} znaków.` };
+  }
+  return { ok: true, title: safeTitle, content: safeContent };
+}
 
 initDb();
+auth.ensureAdminUser();
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true, limit: "25kb", parameterLimit: 200 }));
+app.use(bodyParser.json({ limit: "25kb" }));
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -105,7 +124,9 @@ app.get("/posts/:id/edit", auth.requireUser, (req, res) => {
     .get(id);
 
   if (!post) return res.status(404).send("Nie znaleziono posta.");
-  if (post.authorId !== req.user.id) return res.status(403).send("Brak uprawnień do edycji.");
+  if (post.authorId !== req.user.id && !req.user.isAdmin) {
+    return res.status(403).send("Brak uprawnień do edycji.");
+  }
 
   return res.render("edit", { post });
 });
@@ -116,13 +137,17 @@ app.post("/posts/:id/edit", auth.requireUser, (req, res) => {
 
   const post = db.prepare("SELECT id, author_id AS authorId FROM posts WHERE id = ?").get(id);
   if (!post) return res.status(404).send("Nie znaleziono posta.");
-  if (post.authorId !== req.user.id) return res.status(403).send("Brak uprawnień do edycji.");
+  if (post.authorId !== req.user.id && !req.user.isAdmin) {
+    return res.status(403).send("Brak uprawnień do edycji.");
+  }
 
   const title = String(req.body.title || "").trim();
   const content = String(req.body.content || "").trim();
-  if (!title || !content) return res.status(400).send("Tytuł i treść są wymagane.");
+  const validated = validatePostInput(title, content);
+  if (!validated.ok) return res.status(400).send(validated.error);
 
-  db.prepare("UPDATE posts SET title = ?, content = ? WHERE id = ?").run(title, content, id);
+  db.prepare("UPDATE posts SET title = ?, content = ? WHERE id = ?")
+    .run(validated.title, validated.content, id);
   return res.redirect("/");
 });
 
@@ -132,7 +157,9 @@ app.post("/posts/:id/delete", auth.requireUser, (req, res) => {
 
   const post = db.prepare("SELECT id, author_id AS authorId FROM posts WHERE id = ?").get(id);
   if (!post) return res.status(404).send("Nie znaleziono posta.");
-  if (post.authorId !== req.user.id) return res.status(403).send("Brak uprawnień do usunięcia.");
+  if (post.authorId !== req.user.id && !req.user.isAdmin) {
+    return res.status(403).send("Brak uprawnień do usunięcia.");
+  }
 
   db.prepare("DELETE FROM posts WHERE id = ?").run(id);
   return res.redirect("/");
@@ -143,11 +170,11 @@ app.get("/about", (req, res) => {
 });
 
 app.post("/add", auth.requireUser, (req, res) => {
-  const { title, content } = req.body;
-  if (title && content) {
-    db.prepare("INSERT INTO posts (title, content, author_id) VALUES (?, ?, ?)")
-      .run(String(title).trim(), String(content).trim(), req.user.id);
-  }
+  const validated = validatePostInput(req.body?.title, req.body?.content);
+  if (!validated.ok) return res.status(400).send(validated.error);
+
+  db.prepare("INSERT INTO posts (title, content, author_id) VALUES (?, ?, ?)")
+    .run(validated.title, validated.content, req.user.id);
   res.redirect("/");
 });
 

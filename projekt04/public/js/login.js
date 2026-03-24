@@ -27,6 +27,59 @@ document.addEventListener("DOMContentLoaded", function () {
     modal.setAttribute("aria-hidden", "true");
   }
 
+  function validateEmail(value) {
+    const email = String(value || "").trim().toLowerCase();
+    if (!email) return { ok: false, error: "Podaj email." };
+    if (email.length > 254) return { ok: false, error: "Email jest za długi." };
+    if (/\s/.test(email)) return { ok: false, error: "Email nie może zawierać spacji." };
+    const parts = email.split("@");
+    if (parts.length !== 2 || !parts[0] || !parts[1]) return { ok: false, error: "Email jest nieprawidłowy." };
+    return { ok: true, value: email };
+  }
+
+  function validatePassword(value, { requireStrength } = { requireStrength: false }) {
+    const password = String(value || "");
+    if (!password) return { ok: false, error: "Podaj hasło." };
+    if (password.length > 72) return { ok: false, error: "Hasło jest za długie." };
+    if (requireStrength) {
+      if (password.length < 8) return { ok: false, error: "Hasło musi mieć co najmniej 8 znaków." };
+      if (!/[\p{L}]/u.test(password) || !/[0-9]/.test(password)) {
+        return { ok: false, error: "Hasło musi zawierać literę oraz cyfrę." };
+      }
+    }
+    return { ok: true, value: password };
+  }
+
+  function validateRegisterForm(form) {
+    const firstName = String(form.querySelector('input[name="firstName"]')?.value || "").trim();
+    const lastName = String(form.querySelector('input[name="lastName"]')?.value || "").trim();
+    const ageRaw = String(form.querySelector('input[name="age"]')?.value || "").trim();
+
+    if (!firstName || !lastName) return { ok: false, error: "Podaj imię i nazwisko." };
+    if (firstName.length > 50 || lastName.length > 50) return { ok: false, error: "Imię i nazwisko są za długie." };
+
+    const age = Number(ageRaw);
+    if (!Number.isInteger(age) || age < 18 || age > 150) return { ok: false, error: "Musisz mieć co najmniej 18 lat." };
+
+    const emailCheck = validateEmail(form.querySelector('input[name="email"]')?.value);
+    if (!emailCheck.ok) return emailCheck;
+
+    const passCheck = validatePassword(form.querySelector('input[name="password"]')?.value, { requireStrength: true });
+    if (!passCheck.ok) return passCheck;
+
+    return { ok: true };
+  }
+
+  function validateLoginForm(form) {
+    const emailCheck = validateEmail(form.querySelector('input[name="email"]')?.value);
+    if (!emailCheck.ok) return emailCheck;
+
+    const passCheck = validatePassword(form.querySelector('input[name="password"]')?.value, { requireStrength: false });
+    if (!passCheck.ok) return passCheck;
+
+    return { ok: true };
+  }
+
   async function postForm(url, form) {
     const body = new URLSearchParams(new FormData(form));
     const resp = await fetch(url, {
@@ -97,6 +150,13 @@ document.addEventListener("DOMContentLoaded", function () {
         const endpoint = form.id === "register-form" ? "/auth/register" : "/auth/login";
 
         try {
+          const validation =
+            form.id === "register-form" ? validateRegisterForm(form) : validateLoginForm(form);
+          if (!validation.ok) {
+            setError(modal, validation.error || "Popraw dane w formularzu.");
+            return;
+          }
+
           await postForm(endpoint, form);
           window.location.reload();
         } catch (err) {

@@ -1,15 +1,15 @@
 # Projekt: Mini Blog w Express
-Autor: **Jakub Jedrak**
+Autor: **Jakub Jędrak**
 
 ## Opis
 Prosta aplikacja blogowa z dynamicznymi widokami. Umożliwia dodawanie postów, które są widoczne na stronie głównej.
 
 ## Funkcjonalności
-- Strona główna `/` z dynamicznie generowaną listą postów
-- Formularz dodawania posta (`POST /add`)
+- Strona główna `/` z listą postów
+- Dodawanie postów (`POST /add`)
+- Edycja i usuwanie postów (autor lub administrator)
 - Dodatkowa strona informacyjna `/about`
-- Stylizacja w `public/css/style.css`
-- Rejestracja i logowanie (baza danych SQLite + sesje w cookies)
+- Rejestracja i logowanie (SQLite + sesje w cookies)
 
 ## Uruchomienie
 ```bash
@@ -18,14 +18,35 @@ npm install
 npm start
 ```
 
-
-JeĹ›li port jest zajÄ™ty, uruchom np. tak:
+Jeśli port jest zajęty, uruchom np. tak:
 ```bash
 PORT=8001 npm start
 ```
 
 ## Logowanie / rejestracja
-- Endpointy: `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`
-- Baza danych: `projekt04/blog.sqlite` (tworzona automatycznie przy starcie). MoĹĽesz ustawiÄ‡ Ĺ›cieĹĽkÄ™ przez `DB_PATH`.
-- Dodawanie postĂłw (`POST /add`) wymaga zalogowania.
-A następnie otwórz w przeglądarce: [http://localhost:8000](http://localhost:8000)
+- Hasło: `8-72` znaków, co najmniej 1 litera i 1 cyfra
+- Baza danych: `projekt04/data/blog.sqlite` (tworzona automatycznie przy starcie). Możesz ustawić ścieżkę przez `DB_PATH`.
+
+## Admin
+- Email: `admin@localhost`
+- Hasło: `admin123`
+
+## Ograniczenia
+- Post: tytuł max `120` znaków, treść max `5000` znaków
+- Request body: limit `25kb`
+
+## Seed (dane testowe)
+Projekt (dla wygody deweloperskiej) pozwala wypełnić bazę danymi testowymi.
+Komentarz: seed został wygenerowany z chata (AI).
+
+```bash
+cd projekt04
+npm run seed
+```
+
+Domyślnie seed **nie** dosiewa danych, jeśli tabela `posts` nie jest pusta. Wymuszenie:
+```bash
+SEED_FORCE=1 npm run seed
+```
+
+Otwórz w przeglądarce: [http://localhost:8000](http://localhost:8000)
