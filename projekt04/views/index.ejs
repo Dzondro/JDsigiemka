@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html data-theme="<%- app.theme %>" lang="pl">
   <head>
-    <%- include('partials/head') %>
+    <%- include("partials/head") %>
   </head>
   <body>
     <header>
-      <h1>Mini Blog</h1>
+      <h1>Wędkarski Blog</h1>
       <nav>
         <a href="/">Strona główna</a>
         <a href="/about">O projekcie</a>
         <a href="/settings/toggle-theme?next=<%- encodeURIComponent(page) %>">
-        <% if (app.theme === "light") { %>
-        <strong>Jasny</strong> | Ciemny
-        <% } else { %>
-        Ciemny | <strong>Jasny</strong>
-        <% } %>
+          <% if (app.theme === "light") { %>
+            <strong>Jasny</strong> | Ciemny
+          <% } else { %>
+            Ciemny | <strong>Jasny</strong>
+          <% } %>
         </a>
         <% if (user) { %>
           <span class="user-badge"><%= user.email %></span>
@@ -27,54 +27,62 @@
     </header>
 
     <% if (!user) { %>
-    <div id="login-modal" class="modal" aria-hidden="true">
-      <div class="modal-content" role="dialog" aria-modal="true" aria-label="Formularz logowania">
-        <button class="modal-close" aria-label="Zamknij">×</button>
-        <h3>Logowanie</h3>
-        <form id="login-form" novalidate>
-          <p class="form-error" aria-live="polite"></p>
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" placeholder="twoj@email.pl" maxlength="254" required>
+      <div id="login-modal" class="modal" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-label="Formularz logowania">
+          <button class="modal-close" aria-label="Zamknij">&times;</button>
+          <h3>Logowanie</h3>
+          <form id="login-form" novalidate>
+            <p class="form-error" aria-live="polite"></p>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="twoj@email.pl" maxlength="254" required />
 
-          <label for="password">Hasło</label>
-          <input id="password" name="password" type="password" placeholder="Hasło" maxlength="72" required>
+            <label for="password">Hasło</label>
+            <input id="password" name="password" type="password" placeholder="Hasło" maxlength="72" required />
 
-          <div class="modal-actions">
-            <button type="submit">Zaloguj</button>
-            <button type="button" class="modal-cancel">Anuluj</button>
-          </div>
-        </form>
+            <div class="modal-actions">
+              <button type="submit">Zaloguj</button>
+              <button type="button" class="modal-cancel">Anuluj</button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
 
-    <div id="register-modal" class="modal" aria-hidden="true">
-      <div class="modal-content" role="dialog" aria-modal="true" aria-label="Formularz rejestracji">
-        <button class="modal-close" aria-label="Zamknij">×</button>
-        <h3>Rejestracja</h3>
-        <form id="register-form" novalidate>
-          <p class="form-error" aria-live="polite"></p>
-          <label for="reg-first">Imię</label>
-          <input id="reg-first" name="firstName" type="text" placeholder="Imię" maxlength="50" required>
+      <div id="register-modal" class="modal" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-label="Formularz rejestracji">
+          <button class="modal-close" aria-label="Zamknij">&times;</button>
+          <h3>Rejestracja</h3>
+          <form id="register-form" novalidate>
+            <p class="form-error" aria-live="polite"></p>
+            <label for="reg-first">Imię</label>
+            <input id="reg-first" name="firstName" type="text" placeholder="Imię" maxlength="50" required />
 
-          <label for="reg-last">Nazwisko</label>
-          <input id="reg-last" name="lastName" type="text" placeholder="Nazwisko" maxlength="50" required>
+            <label for="reg-last">Nazwisko</label>
+            <input id="reg-last" name="lastName" type="text" placeholder="Nazwisko" maxlength="50" required />
 
-          <label for="reg-age">Wiek</label>
-          <input id="reg-age" name="age" type="number" min="18" max="150" placeholder="Wiek" required>
+            <label for="reg-age">Wiek</label>
+            <input id="reg-age" name="age" type="number" min="18" max="150" placeholder="Wiek" required />
 
-          <label for="reg-email">Email</label>
-          <input id="reg-email" name="email" type="email" placeholder="twoj@email.pl" maxlength="254" required>
+            <label for="reg-email">Email</label>
+            <input id="reg-email" name="email" type="email" placeholder="twoj@email.pl" maxlength="254" required />
 
-          <label for="reg-password">Hasło</label>
-          <input id="reg-password" name="password" type="password" placeholder="Hasło" minlength="8" maxlength="72" required>
+            <label for="reg-password">Hasło</label>
+            <input
+              id="reg-password"
+              name="password"
+              type="password"
+              placeholder="Hasło"
+              minlength="8"
+              maxlength="72"
+              required
+            />
 
-          <div class="modal-actions">
-            <button type="submit">Zarejestruj</button>
-            <button type="button" class="modal-cancel">Anuluj</button>
-          </div>
-        </form>
+            <div class="modal-actions">
+              <button type="submit">Zarejestruj</button>
+              <button type="button" class="modal-cancel">Anuluj</button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
     <% } %>
 
     <main>
@@ -84,11 +92,11 @@
           <p class="notice notice-warn">Musisz być zalogowany, żeby dodać post.</p>
         <% } %>
         <% if (user) { %>
-        <form action="/add" method="POST">
-          <input type="text" name="title" placeholder="Tytuł posta" maxlength="120" required />
-          <textarea name="content" placeholder="Treść posta" maxlength="5000" required></textarea>
-          <button type="submit">Dodaj</button>
-        </form>
+          <form action="/add" method="POST">
+            <input type="text" name="title" placeholder="Tytuł posta" maxlength="120" required />
+            <textarea name="content" placeholder="Treść posta" maxlength="5000" required></textarea>
+            <button type="submit">Dodaj</button>
+          </form>
         <% } else { %>
           <p class="notice">Zaloguj się, aby móc dodawać posty.</p>
         <% } %>
@@ -121,7 +129,6 @@
       </section>
     </main>
 
-    <%- include('partials/foot') %>
-
+    <%- include("partials/foot") %>
   </body>
 </html>

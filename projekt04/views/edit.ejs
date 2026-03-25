@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html data-theme="<%- app.theme %>" lang="pl">
   <head>
-    <%- include('partials/head') %>
+    <%- include("partials/head") %>
   </head>
   <body>
     <header>
-      <h1>Edycja posta</h1>
+      <h1>Wędkarski Blog</h1>
       <nav>
         <a href="/">Strona główna</a>
         <a href="/about">O projekcie</a>
@@ -14,7 +14,7 @@
 
     <main>
       <section class="form-section">
-        <h2>Zmień treść</h2>
+        <h2>Edycja posta</h2>
         <form action="/posts/<%= post.id %>/edit" method="POST">
           <input type="text" name="title" value="<%= post.title %>" maxlength="120" required />
           <textarea name="content" maxlength="5000" required><%= post.content %></textarea>
@@ -26,6 +26,6 @@
       </section>
     </main>
 
-    <%- include('partials/foot') %>
+    <%- include("partials/foot") %>
   </body>
 </html>

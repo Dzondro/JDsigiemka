@@ -1,20 +1,23 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html data-theme="<%- app.theme %>" lang="pl">
   <head>
-    <%- include('partials/head') %>
+    <%- include("partials/head") %>
   </head>
   <body>
     <header>
-      <h1>O projekcie</h1>
+      <h1>Wędkarski Blog</h1>
       <nav>
         <a href="/">Strona główna</a>
       </nav>
     </header>
 
     <main>
-      <p>Ten prosty blog został stworzony przez <strong>Jakuba Jedraka</strong> w ramach projektu z PZAW.</p>
+      <h2>O projekcie</h2>
+      <p>
+        Ten prosty blog został stworzony przez <strong>Jakuba Jędraka</strong> w ramach projektu z PZAW.
+      </p>
     </main>
 
-    <%- include('partials/foot') %>
+    <%- include("partials/foot") %>
   </body>
 </html>

@@ -39,7 +39,7 @@ cd projekt04
 npm run seed
 ```
 
-Domyślnie seed **nie** dosiewa danych, jeśli tabela `posts` nie jest pusta. Wymuszenie:
+Domyślnie seed nie dodaje danych, jeśli tabela `posts` nie jest pusta. Wymuszenie:
 ```bash
 SEED_FORCE=1 npm run seed
 ```

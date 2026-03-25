@@ -1,7 +1,6 @@
-// Ten plik został wygenerowany z pomocą chata. Bazy testowe też zostały wygenerowane.
 import { db, initDb } from "../models/db.js";
 import auth from "../models/auth.js";
-
+//poniższa funkcja zrobiona z pomoca AI
 function getUserIdByEmail(email) {
   const row = db.prepare("SELECT id FROM users WHERE email = ?").get(String(email).trim().toLowerCase());
   return row?.id ?? null;
@@ -40,15 +39,15 @@ function main() {
       firstName: "Jan",
       lastName: "Kowalski",
       age: 25,
-      email: "jan@example.com",
+      email: "janek@Sum.com",
       password: "Jan12345",
     },
     {
-      firstName: "Anna",
+      firstName: "Zbigniew",
       lastName: "Nowak",
       age: 28,
-      email: "anna@example.com",
-      password: "Anna12345",
+      email: "Zbyszek@Karp.com",
+      password: "Zbychu12345",
     },
   ];
 
@@ -73,22 +72,24 @@ function main() {
   if (process.env.SEED_FORCE === "1") {
     db.prepare("DELETE FROM posts").run();
   }
-
+//posty do seeda wygenerowane z chata
   insertPost({
-    title: "Witaj na blogu!",
-    content: "To jest przykładowy post wygenerowany przez skrypt seed.",
+    title: "Witaj na Wędkarskim Blogu!",
+    content: "To jest przykładowy post. Wpisy testowe są o rybach i wędkowaniu.",
     authorId: adminId,
   });
 
   const [u1, u2] = ensuredUsers;
   insertPost({
-    title: "Mój pierwszy post",
-    content: "Cześć! Testuję dodawanie postów w aplikacji.",
+    title: "Mój pierwszy wypad na pstrąga",
+    content:
+      "Cześć! Startuję z blogiem. Na pstrąga najlepiej działały małe obrotówki i delikatne prowadzenie w nurcie.",
     authorId: u1.userId,
   });
   insertPost({
-    title: "Drugi wpis",
-    content: "To jest kolejny przykładowy wpis (seed).",
+    title: "Jak dobrać przynętę na szczupaka",
+    content:
+      "W mętnej wodzie wybieram jaśniejsze kolory, a przy wietrze cięższe gumy. Na płytko często wygrywają woblery.",
     authorId: u2.userId,
   });
 
@@ -98,4 +99,3 @@ function main() {
 }
 
 main();
-
