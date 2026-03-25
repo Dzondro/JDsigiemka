@@ -18,11 +18,6 @@ npm install
 npm start
 ```
 
-Jeśli port jest zajęty, uruchom np. tak:
-```bash
-PORT=8001 npm start
-```
-
 ## Logowanie / rejestracja
 - Hasło: `8-72` znaków, co najmniej 1 litera i 1 cyfra
 - Baza danych: `projekt04/data/blog.sqlite` (tworzona automatycznie przy starcie). Możesz ustawić ścieżkę przez `DB_PATH`.
@@ -37,7 +32,7 @@ PORT=8001 npm start
 
 ## Seed (dane testowe)
 Projekt (dla wygody deweloperskiej) pozwala wypełnić bazę danymi testowymi.
-Komentarz: seed został wygenerowany z chata (AI).
+
 
 ```bash
 cd projekt04
