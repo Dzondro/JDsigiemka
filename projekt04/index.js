@@ -31,6 +31,14 @@ function validatePostInput(title, content) {
   return { ok: true, title: safeTitle, content: safeContent };
 }
 
+function userHasDuplicatePostTitle(userId, title, excludePostId) {
+  const query = `SELECT COUNT(*) AS c FROM posts WHERE author_id = ? AND LOWER(title) = LOWER(?)`;
+  const row = excludePostId
+    ? db.prepare(query + " AND id != ?").get(userId, title, excludePostId)
+    : db.prepare(query).get(userId, title);
+  return (row?.c ?? 0) > 0;
+}
+
 initDb();
 auth.ensureAdminUser();
 
@@ -101,7 +109,8 @@ app.get("/", (req, res) => {
         p.id AS id,
         p.title AS title,
         p.content AS content,
-        p.created_at AS date,
+        p.created_at AS createdAt,
+        p.edited_at AS editedAt,
         p.author_id AS authorId,
         u.first_name AS firstName,
         u.last_name AS lastName
@@ -111,8 +120,28 @@ app.get("/", (req, res) => {
     )
     .all();
 
+  const myPosts = req.user
+    ? db
+        .prepare(
+          `SELECT
+            p.id AS id,
+            p.title AS title,
+            p.content AS content,
+            p.created_at AS createdAt,
+            p.edited_at AS editedAt,
+            p.author_id AS authorId,
+            u.first_name AS firstName,
+            u.last_name AS lastName
+          FROM posts p
+          JOIN users u ON u.id = p.author_id
+          WHERE p.author_id = ?
+          ORDER BY p.id DESC`,
+        )
+        .all(req.user.id)
+    : [];
+
   const error = req.query?.error || null;
-  res.render("index", { posts, error });
+  res.render("index", { posts, myPosts, error });
 });
 
 app.get("/posts/:id/edit", auth.requireUser, (req, res) => {
@@ -146,7 +175,11 @@ app.post("/posts/:id/edit", auth.requireUser, (req, res) => {
   const validated = validatePostInput(title, content);
   if (!validated.ok) return res.status(400).send(validated.error);
 
-  db.prepare("UPDATE posts SET title = ?, content = ? WHERE id = ?")
+  if (userHasDuplicatePostTitle(req.user.id, validated.title, id)) {
+    return res.status(400).send("Masz już post o takim tytule.");
+  }
+
+  db.prepare("UPDATE posts SET title = ?, content = ?, edited_at = datetime('now') WHERE id = ?")
     .run(validated.title, validated.content, id);
   return res.redirect("/");
 });
@@ -172,6 +205,10 @@ app.get("/about", (req, res) => {
 app.post("/add", auth.requireUser, (req, res) => {
   const validated = validatePostInput(req.body?.title, req.body?.content);
   if (!validated.ok) return res.status(400).send(validated.error);
+
+  if (userHasDuplicatePostTitle(req.user.id, validated.title)) {
+    return res.status(400).send("Masz już post o takim tytule.");
+  }
 
   db.prepare("INSERT INTO posts (title, content, author_id) VALUES (?, ?, ?)")
     .run(validated.title, validated.content, req.user.id);

@@ -29,9 +29,11 @@ function main() {
   }
 
   const postsCount = db.prepare("SELECT COUNT(*) AS c FROM posts").get()?.c ?? 0;
-  if (Number(postsCount) > 0 && process.env.SEED_FORCE !== "1") {
-    console.log("Seed pominięty: tabela posts nie jest pusta. Ustaw SEED_FORCE=1 aby dosiać mimo to.");
-    return;
+  if (process.env.SEED_FORCE === "1") {
+    db.prepare("DELETE FROM posts").run();
+    console.log("Usunięto istniejące posty przed seedingiem.");
+  } else if (Number(postsCount) > 0) {
+    console.log("Seed będzie uzupełniający. Istniejące posty nie zostaną duplikowane.");
   }
 
   const users = [
@@ -69,29 +71,36 @@ function main() {
     return;
   }
 
-  if (process.env.SEED_FORCE === "1") {
-    db.prepare("DELETE FROM posts").run();
-  }
-//posty do seeda wygenerowane z chata
-  insertPost({
-    title: "Witaj na Wędkarskim Blogu!",
-    content: "To jest przykładowy post. Wpisy testowe są o rybach i wędkowaniu.",
-    authorId: adminId,
-  });
+  const posts = [
+    {
+      title: "Witaj na Wędkarskim Blogu!",
+      content: "To jest przykładowy post. Wpisy testowe są o rybach i wędkowaniu.",
+      authorId: adminId,
+    },
+    {
+      title: "Mój pierwszy wypad na pstrąga",
+      content:
+        "Cześć! Startuję z blogiem. Na pstrąga najlepiej działały małe obrotówki i delikatne prowadzenie w nurcie.",
+      authorId: ensuredUsers[0].userId,
+    },
+    {
+      title: "Jak dobrać przynętę na szczupaka",
+      content:
+        "W mętnej wodzie wybieram jaśniejsze kolory, a przy wietrze cięższe gumy. Na płytko często wygrywają woblery.",
+      authorId: ensuredUsers[1].userId,
+    },
+  ];
 
-  const [u1, u2] = ensuredUsers;
-  insertPost({
-    title: "Mój pierwszy wypad na pstrąga",
-    content:
-      "Cześć! Startuję z blogiem. Na pstrąga najlepiej działały małe obrotówki i delikatne prowadzenie w nurcie.",
-    authorId: u1.userId,
-  });
-  insertPost({
-    title: "Jak dobrać przynętę na szczupaka",
-    content:
-      "W mętnej wodzie wybieram jaśniejsze kolory, a przy wietrze cięższe gumy. Na płytko często wygrywają woblery.",
-    authorId: u2.userId,
-  });
+  const canInsertPost = db.prepare(
+    "SELECT 1 FROM posts WHERE author_id = ? AND LOWER(title) = LOWER(?) LIMIT 1",
+  );
+
+  for (const post of posts) {
+    const exists = canInsertPost.get(post.authorId, post.title);
+    if (!exists) {
+      insertPost(post);
+    }
+  }
 
   console.log("Seed zakończony.");
   console.log(`Admin: ${adminResult.email}`);

@@ -1,4 +1,26 @@
 document.addEventListener("DOMContentLoaded", function () {
+  function formatUtcPostTimes() {
+    const timeNodes = document.querySelectorAll("time.post-time");
+    const formatter = new Intl.DateTimeFormat("pl-PL", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
+    timeNodes.forEach((node) => {
+      const datetime = node.getAttribute("datetime");
+      if (!datetime) return;
+      const date = new Date(datetime);
+      if (Number.isNaN(date.valueOf())) return;
+      node.textContent = formatter.format(date);
+    });
+  }
+
+  formatUtcPostTimes();
+
   const forms = document.querySelectorAll("form.post-delete-form");
 
   forms.forEach((form) => {

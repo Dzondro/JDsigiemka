@@ -15,6 +15,27 @@ fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
 export const db = new DatabaseSync(dbPath);
 
+function createUniquePostTitleIndex() {
+  const duplicateTitles = db
+    .prepare(
+      `SELECT COUNT(*) AS c FROM (
+        SELECT author_id, LOWER(title) AS title, COUNT(*) AS count
+        FROM posts
+        GROUP BY author_id, LOWER(title)
+        HAVING COUNT(*) > 1
+      );`,
+    )
+    .get()?.c;
+
+  if ((duplicateTitles ?? 0) === 0) {
+    db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_posts_author_title ON posts(author_id, title COLLATE NOCASE);");
+  } else {
+    console.warn(
+      "Nie utworzono unikalnego indeksu na postach, ponieważ istnieją duplikaty tytułów dla tego samego autora.",
+    );
+  }
+}
+
 export function initDb() {
   db.exec("PRAGMA foreign_keys = ON;");
   db.exec("PRAGMA journal_mode = WAL;");
@@ -60,9 +81,18 @@ export function initDb() {
       content TEXT NOT NULL,
       author_id INTEGER NOT NULL,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      edited_at TEXT,
       FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `);
+
+  const postColumns = db.prepare("PRAGMA table_info(posts);").all();
+  const hasEditedAt = postColumns.some((col) => col?.name === "edited_at");
+  if (!hasEditedAt) {
+    db.exec("ALTER TABLE posts ADD COLUMN edited_at TEXT;");
+  }
+
+  createUniquePostTitleIndex();
 }
 
 export default {

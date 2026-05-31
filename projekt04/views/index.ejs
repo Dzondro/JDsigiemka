@@ -102,6 +102,38 @@
         <% } %>
       </section>
 
+      <% if (user) { %>
+        <section class="my-posts">
+          <h2>Twoje posty</h2>
+          <% if (myPosts.length === 0) { %>
+            <p>Nie masz jeszcze żadnych postów.</p>
+          <% } else { %>
+            <% myPosts.forEach(post => { %>
+              <article class="post">
+                <h3><%= post.title %></h3>
+                <p><%= post.content %></p>
+                <div class="post-meta">
+                  <span class="date">
+                    <time class="post-time" datetime="<%= post.createdAt %>Z"><%= post.createdAt %></time>
+                    <% if (post.editedAt) { %>
+                      | Edytowano: <time class="post-time" datetime="<%= post.editedAt %>Z"><%= post.editedAt %></time>
+                    <% } %>
+                    | <%= post.firstName %> <%= post.lastName %>
+                  </span>
+                  <div class="post-actions">
+                    <a class="post-action post-edit" href="/posts/<%= post.id %>/edit">Edytuj</a>
+                    <form class="post-delete-form" action="/posts/<%= post.id %>/delete" method="POST">
+                      <button class="post-action post-delete" type="submit">Usuń</button>
+                      <p class="inline-error" aria-live="polite"></p>
+                    </form>
+                  </div>
+                </div>
+              </article>
+            <% }) %>
+          <% } %>
+        </section>
+      <% } %>
+
       <section class="posts">
         <h2>Wszystkie posty</h2>
         <% if (posts.length === 0) { %>
@@ -112,7 +144,13 @@
               <h3><%= post.title %></h3>
               <p><%= post.content %></p>
               <div class="post-meta">
-                <span class="date"><%= post.date %> | <%= post.firstName %> <%= post.lastName %></span>
+                <span class="date">
+                  <time class="post-time" datetime="<%= post.createdAt %>Z"><%= post.createdAt %></time>
+                  <% if (post.editedAt) { %>
+                    | Edytowano: <time class="post-time" datetime="<%= post.editedAt %>Z"><%= post.editedAt %></time>
+                  <% } %>
+                  | <%= post.firstName %> <%= post.lastName %>
+                </span>
                 <% if (user && (Number(user.id) === Number(post.authorId) || user.isAdmin)) { %>
                   <div class="post-actions">
                     <a class="post-action post-edit" href="/posts/<%= post.id %>/edit">Edytuj</a>
